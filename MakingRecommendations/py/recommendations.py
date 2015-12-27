@@ -7,3 +7,6 @@ def euclidean_distance(item, person_1, person_2):
     distance = sqrt(sum([pow(item[person_1][m] - item[person_2][m], 2) for m in common_item]))
     return 1 / (1 + distance)
     
+def pearson_distance(item, person_1, person_2):
+    common_item = {}
+    
