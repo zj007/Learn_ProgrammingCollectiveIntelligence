@@ -1,6 +1,6 @@
 from math import sqrt
 
-def similarity(item, person_1, person_2):
+def euclidean_distance(item, person_1, person_2):
     common_item = {e for e in item[person_1] if e in item[person_2]}
     if len(common_item) == 0:
         return 0
