@@ -7,10 +7,12 @@
 (来自百度图片)
 
 在python中可以这样计算二维空间两个点的欧几里得距离，多维空间下类似
+    
     >>> from math import sqrt
     >>> sqrt(pow(x1 - x2) + pow(y1 - y2))
     
 距离越短的点越相似，实际使用过程中，相似度函数返回值需要和实际相似度正相关。 
+   
     >>> def similarity(point_1, point-2):
     >>>     distance = sqrt(pow(point_1.x - point_2.x) + pow(point_1.y - point_2.y))
     >>>     return 1 / (distance + 1)
