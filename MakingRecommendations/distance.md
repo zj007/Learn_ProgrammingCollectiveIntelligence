@@ -26,8 +26,8 @@
     >>> y_mean = float(sum(y)) / len(y)
     >>> x_1 = map(lambda x : x - x_mean, x)
     >>> y_1 = map(lambda x : x - y_mean, y)
-    >>> dot_xy = sum(\[x_1\[i] * y_1\[i] for i in xrange(len(x_1))])
-    >>> x_1_mo = sqrt(sum(\[e**2 for e in x_1]))
-    >>> y_1_mo = sqrt(sum(\[e**2 for e in y_1]))
+    >>> dot_xy = sum([x_1[i] * y_1[i] for i in xrange(len(x_1))])
+    >>> x_1_mo = sqrt(sum([e**2 for e in x_1]))
+    >>> y_1_mo = sqrt(sum([e**2 for e in y_1]))
     >>> pearson_distance = dot_xy / (x_1_mo * y_1_mo)
      
