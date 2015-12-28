@@ -5,4 +5,5 @@
 ## 1. 推荐
 
 [相似度的计算](MakingRecommendations/distance.md)
+[user-based & item-based](MakingRecommendations/recommend.md)
 
