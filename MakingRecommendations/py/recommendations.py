@@ -16,8 +16,8 @@ def pearson_distance(item, person_1, person_2):
     p1 = [item[person_1][m] for m in common_item]
     p2 = [item[person_2][m] for m in common_item]
     length = len(common_item)
-    p1_mean = sum(p1) / length
-    p2_mean = sum(p2) / length
+    p1_mean = float(sum(p1)) / length
+    p2_mean = float(sum(p2)) / length
     
     # 向量减去算术平均数
     p_1 = map(lambda x : x - p1_mean, p1)
@@ -32,3 +32,7 @@ def pearson_distance(item, person_1, person_2):
         return 0
     return p_1_2_dot / (p_1_mo * p_2_mo)
     
+def topMatches(item, person, n, similarity = pearson_distance):
+    candidates = [(other, similarity(item, person, other)) for other in item if other != person]
+    candidates.sort(key = lambda x : x[1], reverse = True)
+    return candidates[:n]
