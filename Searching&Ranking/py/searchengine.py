@@ -67,11 +67,11 @@ class crawler:
                             url = href
                         else:
                             url = urljoin(page, href)
-                    url = url.split('#')[0]
-                    if not self.isindexed(url):
-                        new_pages.add(url)
-                    link_text = self.get_text_only(link)
-                    self.add_linkref(page, url, link_text)
+                        url = url.split('#')[0]
+                        if not self.isindexed(url):
+                            new_pages.add(url)
+                        link_text = self.get_text_only(link)
+                        self.add_linkref(page, url, link_text)
                 self.db_commit()
             pages = new_pages
         
