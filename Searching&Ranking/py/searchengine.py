@@ -44,13 +44,21 @@ class crawler:
     def add_linkref(self, url_from, utl_to, link_text):
         pass
     
-    def crawl(self, pages, depth = 2):
+    def crawl(self, pages, allowed_domain ,depth = 2):
         """从一小组的网页开始广度优先搜索，直到某一给定的深度，
         期间为网页建立索引
         """
         for i in xrange(depth):
             new_pages = set()
             for page in pages:
+                page_allowed = True
+                if allowed_domain:
+                    page_allowed = False
+                    for domain in allowed_domain:
+                        if page.startswith(domain):
+                            page_allowed = True
+                if not page_allowed:
+                    continue
                 try:
                     c = urllib2.urlopen(page)
                 except:
