@@ -34,7 +34,7 @@ class crawler:
         )
         res = cur.fetchone()
         if res == None:
-            cur = self.con.execute(
+            cur = self._con.execute(
                 "insert into %s (%s) values ('%s')" % (table, field, value)
             )
             return cur.lastrowid
@@ -56,7 +56,7 @@ class crawler:
         
         for i in xrange(len(words)):
             word = words[i]
-            if word in ignore_words:
+            if word in self.ignore_words:
                 continue
             wordid = self.get_entry_id('wordlist', 'word', word)
             self._con.execute('insert into wordlocation(urlid, wordid, location) \
@@ -115,7 +115,7 @@ class crawler:
                     print 'Could not open %s'%page
                     continue
                 s = soup.BeautifulSoup(c.read())
-                self.add_to_index(page, soup)
+                self.add_to_index(page, s)
         
                 links = s('a')
                 for link in links:
@@ -126,6 +126,8 @@ class crawler:
                         else:
                             url = urljoin(page, href)
                         url = url.split('#')[0]
+                        if '\'' in url or '"' in url:
+                            continue
                         if not self.isindexed(url):
                             new_pages.add(url)
                         link_text = self.get_text_only(link)
@@ -147,4 +149,9 @@ class crawler:
         self._con.execute('create index urlfromidx on link(fromid)')
         self.db_commit()
     
-    
+if __name__ == '__main__':
+    pages = ['https://en.wikipedia.org/wiki/Python']
+    allowed_domain = ['https://en.wikipedia.org']
+    my_crawler = crawler('searchindex.db')
+    my_crawler.create_index_tables()
+    my_crawler.crawl(pages, allowed_domain)
