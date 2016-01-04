@@ -3,6 +3,8 @@
 import urllib2
 import BeautifulSoup as soup
 from urlparse import urljoin
+import sqlite3
+import re
 
 class crawler:
     
@@ -14,31 +16,79 @@ class crawler:
     
     def __init__(self, db_name):
         """初始化crawler，传入数据库名称"""
-        pass
+        self._con = sqlite3.connect(db_name)
     
     def __del__(self):
-        pass
+        self._con.close()
         
     def db_commit(self):
-        pass
+        self._con.commit()
+    
+    def get_con(self):
+        return self._con
        
     def get_entry_id(self, table, field, value, create_new = True):
         """获取条目的id，如果条目不存在，就将条目加入到数据库中"""
-        return None
+        cur = self._con.execute(
+            'select rowid from %s where %s = "%s"' % (table, field, value)
+        )
+        res = cur.fetchone()
+        if res == None:
+            cur = self.con.execute(
+                "insert into %s (%s) values ('%s')" % (table, field, value)
+            )
+            return cur.lastrowid
+        else:
+            return res[0]
         
     def add_to_index(self, url, soup):
         """为每个网页建立索引"""
+        if self.isindexed(url):
+            print 'url:%s already indexed'
+            return
+        
         print 'Indexing %s' % url
+        
+        text = self.get_text_only(soup)
+        words = self.separatewords(text)
+        
+        urlid = self.get_entry_id('urllist', 'url', url)
+        
+        for i in xrange(len(words)):
+            word = words[i]
+            if word in ignore_words:
+                continue
+            wordid = self.get_entry_id('wordlist', 'word', word)
+            self._con.execute('insert into wordlocation(urlid, wordid, location) \
+                values (%d, %d, %d)' % (urlid, wordid, i))
     
     def get_text_only(self, soup):
         """从html中提出文本"""
-        return None
+        v = soup.string
+        if v == None:
+            c = soup.contents
+            result_text = ''
+            for t in c:
+                sub_text = self.get_text_only(t)
+                result_text += sub_text + '\n'
+            return result_text
+        return v.strip()
         
     def separatewords(self, text):
         """分词"""
-        return None
+        splitter = re.compile('\\W*')
+        return [s.lower() for s in splitter.split(text) if s != '']
         
     def isindexed(self, url):
+        u = self._con.execute(
+            "select rowid from urllist where url='%s'" % url
+        ).fetchone()
+        if u != None:
+            v = self._con.execute(
+                'select * from wordlocation where urlid=%d' % u[0]
+            ).fetchone()
+            if v != None:
+                return True
         return False
     
     def add_linkref(self, url_from, utl_to, link_text):
@@ -85,6 +135,16 @@ class crawler:
         
     def create_index_tables(self):
         """创建数据库表"""
-        pass
+        self._con.execute('create table urllist(url)')
+        self._con.execute('create table wordlist(word)')
+        self._con.execute('create table wordlocation(urlid, wordid, location)')
+        self._con.execute('create table link(fromid integer, toid integer)')
+        self._con.execute('create table linkwords(wordid, linkid)')
+        self._con.execute('create index wordidx on wordlist(word)')
+        self._con.execute('create index urlidx on urllist(url)')
+        self._con.execute('create index wordurlidx on wordlocation(wordid)')
+        self._con.execute('create index urltoidx on link(toid)')
+        self._con.execute('create index urlfromidx on link(fromid)')
+        self.db_commit()
     
     
