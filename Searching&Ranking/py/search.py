@@ -64,13 +64,34 @@ class searcher:
 
     def get_match_rows_new(self, q):
         words = q.split(' ')
-        url_list = [None for i in xrange(len(words))]
+        url_set = [None for i in xrange(len(words))]
         for i, word in enumerate(words):
-            url_list[i] = {e[0] for e in self.get_index(word)}
-        result = url_list[0]
+            url_set[i] = {e[0] for e in self.get_index(word)}
+        result = url_set[0]
         for i in xrange(1, len(words)):
-            result &= url_list[i]
+            result &= url_set[i]
         return [self.get_url_name(e) for e in result]
+    
+    def get_scored_list(self, rows, wordids):
+        total_scores = {row[0]:0 for row in rows}
+        
+        weights = [
+            
+        ]
+        
+        for (weight, scores) in weights:
+            for url in total_scores:
+                total_scores[url] += weight * scores[url]
+        
+        return total_scores
+    
+    def query(self, q):
+        rows, wordids = self.get_match_rows(q)
+        scores = self.get_scored_list(rows, wordids)
+        url_list = [(score, url) for url, score in scores.items()]
+        url_list.sort(key = lambda x : x[0], reverse = True)
+        for score, url in url_list[:10]:
+            print '%f\t%s' % (score, self.get_url_name(url))
 
 if __name__ == '__main__':
     s = searcher('searchindex.db')
