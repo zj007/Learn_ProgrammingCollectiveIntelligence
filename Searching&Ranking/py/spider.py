@@ -5,15 +5,9 @@ import BeautifulSoup as soup
 from urlparse import urljoin
 import sqlite3
 import re
+from cibiao import ignore_words
 
-class crawler:
-    
-    ignore_words = ('the', 'of', 'to', 'and', 'a',
-                    'an', 'is', 'in', 'it', 'he',
-                    'she', 'then', 'else', 'if',
-                    'while', 'when', 'hi', 'hello'
-                    )
-    
+class crawler(object):
     def __init__(self, db_name):
         """初始化crawler，传入数据库名称"""
         self._con = sqlite3.connect(db_name)
@@ -56,7 +50,7 @@ class crawler:
         
         for i in xrange(len(words)):
             word = words[i]
-            if word in self.ignore_words:
+            if word in ignore_words:
                 continue
             wordid = self.get_entry_id('wordlist', 'word', word)
             self._con.execute('insert into wordlocation(urlid, wordid, location) \
