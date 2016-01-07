@@ -2,7 +2,7 @@
 from math import sqrt
 import random
 
-def pearson(v1， v2):
+def pearson(v1, v2):
     # 算术平均数
     v_len = len(v1)
     assert v_len == len(v2)
@@ -22,19 +22,19 @@ def pearson(v1， v2):
     # 0 表示用户对每一部电影的评分都是一样的（或者没有评分）
     #那表示这个用户没有偏好，也就没有参考价值，所以
     #和其他用户的相似是0 
-    if v_1_mo == 0 || v_2_mo == 0:
+    if v_1_mo == 0 or v_2_mo == 0:
         return 0
     return v_1_2_dot / (v_1_mo * v_2_mo)
     
 def cluster_distance(v1, v2):
     return 1.0 - pearson(v1, v2)
     
-def kcluster(rows, distance = cluster_distance, k = 2, iternum = 50):
+def kcluster(rows, distance = cluster_distance, k = 2, iternum = 10):
     row_len = len(rows[0])
     row_num = len(rows)
     range = [(min([row[i] for row in rows]), max([row[i] for row in rows])) 
             for i in xrange(row_len)]
-    clusters = [[range[0] + random.random() * (range[1] - range[0]) for i in xrange(row_len)] for j in xrange(k)]
+    clusters = [[range[i][0] + random.random() * (range[i][1] - range[i][0]) for i in xrange(row_len)] for j in xrange(k)]
     
     last_matches = None
     cur_matches = None
@@ -52,23 +52,25 @@ def kcluster(rows, distance = cluster_distance, k = 2, iternum = 50):
                     min_d = d
                     min_c = c
             cur_matches[min_c].add(rowid)
-         if cur_matches == last_matches:
+        if cur_matches == last_matches:
             break
-         last_matches = cur_matches
+        last_matches = cur_matches
          #重新计算聚类中心点
-         for c in xrange(k):
+        for c in xrange(k):
             c_row_num = len(cur_matches[c])
-            clusters[c] = [sum([row[i] for row in cur_matches[c]]) / float(c_row_num) for i in xrange(row_len)]
+            if c_row_num == 0:
+                continue
+            clusters[c] = [sum([rows[rowid][i] for rowid in cur_matches[c] ]) / float(c_row_num) for i in xrange(row_len)]
     return cur_matches
 
-def main():
+def main(k):
     from data import d
     rows = []
     map = []
     for key in d:
         rows.append(d[key])
         map.append(key)
-    cluster = kcluster(rows)
+    cluster = kcluster(rows, k = int(k))
     for c in cluster:
         print '-'*7
         for e in c:
@@ -76,4 +78,5 @@ def main():
         print '-'*7
         
 if __name__ == '__main__':
-    main()
+    import sys
+    main(sys.argv[1])
