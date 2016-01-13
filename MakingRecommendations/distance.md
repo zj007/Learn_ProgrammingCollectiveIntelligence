@@ -8,7 +8,7 @@
 距离越短的点越相似，实际使用过程中，相似度函数返回值需要和实际相似度正相关。 
    
     >>> def similarity(point_1, point-2):
-    >>>     distance = sqrt(pow(point_1.x - point_2.x) + pow(point_1.y - point_2.y))
+    >>>     distance = sqrt(pow(point_1.x - point_2.x, 2) + pow(point_1.y - point_2.y, 2))
     >>>     return 1 / (distance + 1)
 
 # 皮尔逊相关系数 (pearson correlation coefficient)

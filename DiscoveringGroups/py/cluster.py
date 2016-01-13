@@ -25,6 +25,9 @@ def pearson(v1, v2):
     if v_1_mo == 0 or v_2_mo == 0:
         return 0
     return v_1_2_dot / (v_1_mo * v_2_mo)
+
+def euclidean_distance(v1, v2):
+    return sqrt(sum([pow(v1[i] - v2[i], 2) for i in xrange(len(v1))]))
     
 def cluster_distance(v1, v2):
     return 1.0 - pearson(v1, v2)
@@ -39,7 +42,7 @@ def kcluster(rows, distance = cluster_distance, k = 2, iternum = 10):
     last_matches = None
     cur_matches = None
     for t in xrange(iternum):
-        print 'Iteration %d' % t
+        #print 'Iteration %d' % t
         cur_matches = [set() for c in xrange(k)]
         #遍历每个点，将点放到最近的中心点下面
         for rowid in xrange(row_num):
