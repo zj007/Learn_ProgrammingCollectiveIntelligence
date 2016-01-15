@@ -1,3 +1,4 @@
+#encoding:utf8
 from math import sqrt
 
 def euclidean_distance(item, elem_1, elem_2):
@@ -28,7 +29,7 @@ def pearson_distance(item, elem_1, elem_2):
     p_1_mo = sqrt(sum(e**2 for e in p_1))
     p_2_mo = sqrt(sum(e**2 for e in p_2))
     
-    if p_1_mo == 0 || p_2_mo == 0:
+    if p_1_mo == 0 or p_2_mo == 0:
         return 0
     return p_1_2_dot / (p_1_mo * p_2_mo)
     
@@ -59,9 +60,9 @@ def item_based_recommend(item, items_table, user):
     scores = {}
     total_sim = {}
     
-    for (good, score) in user_item:
+    for (good, score) in user_item.items():
         for (other_good, similarity) in items_table[good]:
-            if other_good in user_item:
+            if other_good in user_item or similarity <= 0:
                 continue
             if other_good not in scores:
                 scores[other_good] = 0
@@ -70,7 +71,15 @@ def item_based_recommend(item, items_table, user):
                 total_sim[other_good] = 0
             total_sim[other_good] += similarity
      
-     # ranking
-     rank_list = [(e, float(score) / total_sim[e]) for (e, score) in scores]
-     rank_list.sort(key = lambda x : x[1], reverse = True)
-     return rank_list
+    # ranking
+    rank_list = [(e, float(score) / total_sim[e]) for (e, score) in scores.items()]
+    rank_list.sort(key = lambda x : x[1], reverse = True)
+    return rank_list
+
+if __name__ == '__main__':
+    from items import critics
+    import sys
+    #print trans_item(critics)
+    items_sim = get_similar_items(critics)
+    print items_sim
+    print item_based_recommend(critics, items_sim, sys.argv[1])
